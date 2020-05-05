@@ -473,5 +473,11 @@ function _name_day_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) 
 
 function _name_day_civix_civicrm_entityTypes(&$entityTypes) {
   $entityTypes = array_merge($entityTypes, array (
+    'CRM_NameDay_DAO_EsProgressNameDay' => 
+    array (
+      'name' => 'EsProgressNameDay',
+      'class' => 'CRM_NameDay_DAO_EsProgressNameDay',
+      'table' => 'civicrm_es_progress_name_day',
+    ),
   ));
 }

@@ -6,7 +6,7 @@ use CRM_NameDay_ExtensionUtil as E;
 /**
  * Implements hook_civicrm_config().
  *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/ 
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
  */
 function name_day_civicrm_config(&$config) {
   _name_day_civix_civicrm_config($config);
@@ -28,6 +28,10 @@ function name_day_civicrm_xmlMenu(&$files) {
  */
 function name_day_civicrm_install() {
   _name_day_civix_civicrm_install();
+
+  // Create custom fields
+  $installer=_name_day_civix_upgrader();
+  $installer->createNameDayField();
 }
 
 /**
@@ -46,6 +50,13 @@ function name_day_civicrm_postInstall() {
  */
 function name_day_civicrm_uninstall() {
   _name_day_civix_civicrm_uninstall();
+
+  // Get extension path
+  $path=CRM_Core_Resources::singleton()->getPath(E::LONG_NAME);
+
+  // Delete custom fields
+  $installer=_name_day_civix_upgrader();
+  $installer->deleteCustomFields();
 }
 
 /**
@@ -168,3 +179,23 @@ function name_day_civicrm_navigationMenu(&$menu) {
   ));
   _name_day_civix_navigationMenu($menu);
 } // */
+
+// function name_day_civicrm_post($op, $objectName, $objectId, &$objectRef) {
+//   if ($op !== 'create' && $op!=='edit') {
+//     return;
+//   }
+//
+//   if ($objectName!=='Individual') {
+//     return;
+//   }
+//   $first_name=$objectRef->first_name ?? null;
+//
+//   if ($first_name) {
+//     name_day_update_name_day($objectId, $first_name);
+//   }
+// }
+//
+// function name_day_update_name_day(int $id, string $first_name) {
+//   $bao=new CRM_NameDay_BAO_EsProgressNameDay();
+//   $date=$bao->updateNameDayDate($id,$first_name);
+// }
