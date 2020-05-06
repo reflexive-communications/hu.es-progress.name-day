@@ -40,5 +40,3 @@ cv en name_day
 After installation there will be a new entity (`EsProgressNameDay`) where you can store name-day info: first names and dates (format: `mm-dd` e.g. 05-17).
 
 Also it creates a daily scheduled job to put a tag (`name day`) on contacts who has name day that day.
-
-## Known Issues
