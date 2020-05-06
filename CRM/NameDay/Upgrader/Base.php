@@ -1,17 +1,17 @@
 <?php
 
 // AUTO-GENERATED FILE -- Civix may overwrite any changes made to this file
-use CRM_NameDay_ExtensionUtil as E;
 
 /**
  * Base class which provides helpers to execute upgrade logic
  */
-class CRM_NameDay_Upgrader_Base {
+class CRM_NameDay_Upgrader_Base
+{
 
   /**
    * @var varies, subclass of this
    */
-  static $instance;
+  static public $instance;
 
   /**
    * @var CRM_Queue_TaskContext
@@ -34,22 +34,54 @@ class CRM_NameDay_Upgrader_Base {
   private $revisions;
 
   /**
-   * @var boolean
+   * @var bool
    *   Flag to clean up extension revision data in civicrm_setting
    */
-  private $revisionStorageIsDeprecated = FALSE;
+  private $revisionStorageIsDeprecated = false;
+
+  public function __construct($extensionName, $extensionDir)
+  {
+    $this->extensionName = $extensionName;
+    $this->extensionDir = $extensionDir;
+  }
+
+  private function getCurrentRevisionDeprecated()
+  {
+    $key = $this->extensionName.':version';
+    if ($revision = CRM_Core_BAO_Setting::getItem('Extension', $key)) {
+      $this->revisionStorageIsDeprecated = true;
+    }
+
+    return $revision;
+  }
+
+  private function deleteDeprecatedRevision()
+  {
+    if ($this->revisionStorageIsDeprecated) {
+      $setting = new CRM_Core_BAO_Setting();
+      $setting->name = $this->extensionName.':version';
+      $setting->delete();
+      CRM_Core_Error::debug_log_message(
+        "Migrated extension schema revision ID for {$this->extensionName} from civicrm_setting (deprecated) to civicrm_extension.\n"
+      );
+    }
+  }
+
+  // ******** Task helpers ********
 
   /**
    * Obtain a reference to the active upgrade handler.
    */
-  static public function instance() {
+  public static function instance()
+  {
     if (!self::$instance) {
       // FIXME auto-generate
       self::$instance = new CRM_NameDay_Upgrader(
         'hu.es-progress.name-day',
-        realpath(__DIR__ . '/../../../')
+        realpath(__DIR__.'/../../../')
       );
     }
+
     return self::$instance;
   }
 
@@ -63,44 +95,46 @@ class CRM_NameDay_Upgrader_Base {
    * CRM_NameDay_Upgrader_Base::_queueAdapter($ctx, 'methodName', 'arg1', 'arg2');
    * @endcode
    */
-  static public function _queueAdapter() {
+  public static function _queueAdapter()
+  {
     $instance = self::instance();
     $args = func_get_args();
     $instance->ctx = array_shift($args);
     $instance->queue = $instance->ctx->queue;
     $method = array_shift($args);
-    return call_user_func_array(array($instance, $method), $args);
-  }
 
-  public function __construct($extensionName, $extensionDir) {
-    $this->extensionName = $extensionName;
-    $this->extensionDir = $extensionDir;
+    return call_user_func_array([$instance, $method], $args);
   }
-
-  // ******** Task helpers ********
 
   /**
    * Run a CustomData file.
    *
    * @param string $relativePath the CustomData XML file path (relative to this extension's dir)
+   *
    * @return bool
    */
-  public function executeCustomDataFile($relativePath) {
-    $xml_file = $this->extensionDir . '/' . $relativePath;
+  public function executeCustomDataFile($relativePath)
+  {
+    $xml_file = $this->extensionDir.'/'.$relativePath;
+
     return $this->executeCustomDataFileByAbsPath($xml_file);
   }
 
   /**
    * Run a CustomData file
    *
-   * @param string $xml_file  the CustomData XML file path (absolute path)
+   * @param string $xml_file the CustomData XML file path (absolute path)
    *
    * @return bool
+   *
+   * @throws \CRM_Core_Exception
    */
-  protected static function executeCustomDataFileByAbsPath($xml_file) {
+  protected static function executeCustomDataFileByAbsPath($xml_file)
+  {
     $import = new CRM_Utils_Migrate_Import();
     $import->run($xml_file);
-    return TRUE;
+
+    return true;
   }
 
   /**
@@ -109,33 +143,47 @@ class CRM_NameDay_Upgrader_Base {
    * @param string $relativePath the SQL file path (relative to this extension's dir)
    *
    * @return bool
+   *
+   * @throws \CRM_Core_Exception
    */
-  public function executeSqlFile($relativePath) {
+  public function executeSqlFile($relativePath)
+  {
     CRM_Utils_File::sourceSQLFile(
       CIVICRM_DSN,
-      $this->extensionDir . DIRECTORY_SEPARATOR . $relativePath
+      $this->extensionDir.DIRECTORY_SEPARATOR.$relativePath
     );
-    return TRUE;
+
+    return true;
   }
 
   /**
    * @param string $tplFile
    *   The SQL file path (relative to this extension's dir).
    *   Ex: "sql/mydata.mysql.tpl".
+   *
    * @return bool
+   * @throws \CRM_Core_Exception
+   * @throws \CRM_Core_Exception
    */
-  public function executeSqlTemplate($tplFile) {
+  public function executeSqlTemplate($tplFile)
+  {
     // Assign multilingual variable to Smarty.
     $upgrade = new CRM_Upgrade_Form();
 
-    $tplFile = CRM_Utils_File::isAbsolute($tplFile) ? $tplFile : $this->extensionDir . DIRECTORY_SEPARATOR . $tplFile;
+    $tplFile = CRM_Utils_File::isAbsolute($tplFile) ? $tplFile : $this->extensionDir.DIRECTORY_SEPARATOR.$tplFile;
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('domainID', CRM_Core_Config::domainID());
     CRM_Utils_File::sourceSQLFile(
-      CIVICRM_DSN, $smarty->fetch($tplFile), NULL, TRUE
+      CIVICRM_DSN,
+      $smarty->fetch($tplFile),
+      null,
+      true
     );
-    return TRUE;
+
+    return true;
   }
+
+  // ******** Revision-tracking helpers ********
 
   /**
    * Run one SQL query.
@@ -144,10 +192,12 @@ class CRM_NameDay_Upgrader_Base {
    * provides syntatic sugar for queueing several tasks that
    * run different queries
    */
-  public function executeSql($query, $params = array()) {
+  public function executeSql($query, $params = [])
+  {
     // FIXME verify that we raise an exception on error
     CRM_Core_DAO::executeQuery($query, $params);
-    return TRUE;
+
+    return true;
   }
 
   /**
@@ -159,33 +209,34 @@ class CRM_NameDay_Upgrader_Base {
    * After passing the $funcName, you can also pass parameters that will go to
    * the function. Note that all params must be serializable.
    */
-  public function addTask($title) {
+  public function addTask($title)
+  {
     $args = func_get_args();
     $title = array_shift($args);
     $task = new CRM_Queue_Task(
-      array(get_class($this), '_queueAdapter'),
+      [get_class($this), '_queueAdapter'],
       $args,
       $title
     );
-    return $this->queue->createItem($task, array('weight' => -1));
-  }
 
-  // ******** Revision-tracking helpers ********
+    return $this->queue->createItem($task, ['weight' => -1]);
+  }
 
   /**
    * Determine if there are any pending revisions.
    *
    * @return bool
    */
-  public function hasPendingRevisions() {
+  public function hasPendingRevisions()
+  {
     $revisions = $this->getRevisions();
     $currentRevision = $this->getCurrentRevision();
 
     if (empty($revisions)) {
-      return FALSE;
+      return false;
     }
     if (empty($currentRevision)) {
-      return TRUE;
+      return true;
     }
 
     return ($currentRevision < max($revisions));
@@ -194,29 +245,33 @@ class CRM_NameDay_Upgrader_Base {
   /**
    * Add any pending revisions to the queue.
    */
-  public function enqueuePendingRevisions(CRM_Queue_Queue $queue) {
+  public function enqueuePendingRevisions(CRM_Queue_Queue $queue)
+  {
     $this->queue = $queue;
 
     $currentRevision = $this->getCurrentRevision();
     foreach ($this->getRevisions() as $revision) {
       if ($revision > $currentRevision) {
-        $title = ts('Upgrade %1 to revision %2', array(
-          1 => $this->extensionName,
-          2 => $revision,
-        ));
+        $title = ts(
+          'Upgrade %1 to revision %2',
+          [
+            1 => $this->extensionName,
+            2 => $revision,
+          ]
+        );
 
         // note: don't use addTask() because it sets weight=-1
 
         $task = new CRM_Queue_Task(
-          array(get_class($this), '_queueAdapter'),
-          array('upgrade_' . $revision),
+          [get_class($this), '_queueAdapter'],
+          ['upgrade_'.$revision],
           $title
         );
         $this->queue->createItem($task);
 
         $task = new CRM_Queue_Task(
-          array(get_class($this), '_queueAdapter'),
-          array('setCurrentRevision', $revision),
+          [get_class($this), '_queueAdapter'],
+          ['setCurrentRevision', $revision],
           $title
         );
         $this->queue->createItem($task);
@@ -228,10 +283,13 @@ class CRM_NameDay_Upgrader_Base {
    * Get a list of revisions.
    *
    * @return array(revisionNumbers) sorted numerically
+   * @throws \ReflectionException
+   * @throws \ReflectionException
    */
-  public function getRevisions() {
+  public function getRevisions()
+  {
     if (!is_array($this->revisions)) {
-      $this->revisions = array();
+      $this->revisions = [];
 
       $clazz = new ReflectionClass(get_class($this));
       $methods = $clazz->getMethods();
@@ -246,36 +304,23 @@ class CRM_NameDay_Upgrader_Base {
     return $this->revisions;
   }
 
-  public function getCurrentRevision() {
+  public function getCurrentRevision()
+  {
     $revision = CRM_Core_BAO_Extension::getSchemaVersion($this->extensionName);
     if (!$revision) {
       $revision = $this->getCurrentRevisionDeprecated();
     }
+
     return $revision;
   }
 
-  private function getCurrentRevisionDeprecated() {
-    $key = $this->extensionName . ':version';
-    if ($revision = CRM_Core_BAO_Setting::getItem('Extension', $key)) {
-      $this->revisionStorageIsDeprecated = TRUE;
-    }
-    return $revision;
-  }
-
-  public function setCurrentRevision($revision) {
+  public function setCurrentRevision($revision)
+  {
     CRM_Core_BAO_Extension::setSchemaVersion($this->extensionName, $revision);
     // clean up legacy schema version store (CRM-19252)
     $this->deleteDeprecatedRevision();
-    return TRUE;
-  }
 
-  private function deleteDeprecatedRevision() {
-    if ($this->revisionStorageIsDeprecated) {
-      $setting = new CRM_Core_BAO_Setting();
-      $setting->name = $this->extensionName . ':version';
-      $setting->delete();
-      CRM_Core_Error::debug_log_message("Migrated extension schema revision ID for {$this->extensionName} from civicrm_setting (deprecated) to civicrm_extension.\n");
-    }
+    return true;
   }
 
   // ******** Hook delegates ********
@@ -283,26 +328,27 @@ class CRM_NameDay_Upgrader_Base {
   /**
    * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
    */
-  public function onInstall() {
-    $files = glob($this->extensionDir . '/sql/*_install.sql');
+  public function onInstall()
+  {
+    $files = glob($this->extensionDir.'/sql/*_install.sql');
     if (is_array($files)) {
       foreach ($files as $file) {
         CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
       }
     }
-    $files = glob($this->extensionDir . '/sql/*_install.mysql.tpl');
+    $files = glob($this->extensionDir.'/sql/*_install.mysql.tpl');
     if (is_array($files)) {
       foreach ($files as $file) {
         $this->executeSqlTemplate($file);
       }
     }
-    $files = glob($this->extensionDir . '/xml/*_install.xml');
+    $files = glob($this->extensionDir.'/xml/*_install.xml');
     if (is_array($files)) {
       foreach ($files as $file) {
         $this->executeCustomDataFileByAbsPath($file);
       }
     }
-    if (is_callable(array($this, 'install'))) {
+    if (is_callable([$this, 'install'])) {
       $this->install();
     }
   }
@@ -310,12 +356,13 @@ class CRM_NameDay_Upgrader_Base {
   /**
    * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
    */
-  public function onPostInstall() {
+  public function onPostInstall()
+  {
     $revisions = $this->getRevisions();
     if (!empty($revisions)) {
       $this->setCurrentRevision(max($revisions));
     }
-    if (is_callable(array($this, 'postInstall'))) {
+    if (is_callable([$this, 'postInstall'])) {
       $this->postInstall();
     }
   }
@@ -323,17 +370,18 @@ class CRM_NameDay_Upgrader_Base {
   /**
    * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
    */
-  public function onUninstall() {
-    $files = glob($this->extensionDir . '/sql/*_uninstall.mysql.tpl');
+  public function onUninstall()
+  {
+    $files = glob($this->extensionDir.'/sql/*_uninstall.mysql.tpl');
     if (is_array($files)) {
       foreach ($files as $file) {
         $this->executeSqlTemplate($file);
       }
     }
-    if (is_callable(array($this, 'uninstall'))) {
+    if (is_callable([$this, 'uninstall'])) {
       $this->uninstall();
     }
-    $files = glob($this->extensionDir . '/sql/*_uninstall.sql');
+    $files = glob($this->extensionDir.'/sql/*_uninstall.sql');
     if (is_array($files)) {
       foreach ($files as $file) {
         CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
@@ -344,9 +392,10 @@ class CRM_NameDay_Upgrader_Base {
   /**
    * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
    */
-  public function onEnable() {
+  public function onEnable()
+  {
     // stub for possible future use
-    if (is_callable(array($this, 'enable'))) {
+    if (is_callable([$this, 'enable'])) {
       $this->enable();
     }
   }
@@ -354,17 +403,19 @@ class CRM_NameDay_Upgrader_Base {
   /**
    * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
    */
-  public function onDisable() {
+  public function onDisable()
+  {
     // stub for possible future use
-    if (is_callable(array($this, 'disable'))) {
+    if (is_callable([$this, 'disable'])) {
       $this->disable();
     }
   }
 
-  public function onUpgrade($op, CRM_Queue_Queue $queue = NULL) {
+  public function onUpgrade($op, CRM_Queue_Queue $queue = null)
+  {
     switch ($op) {
       case 'check':
-        return array($this->hasPendingRevisions());
+        return [$this->hasPendingRevisions()];
 
       case 'enqueue':
         return $this->enqueuePendingRevisions($queue);

@@ -6,7 +6,7 @@
   <name>civicrm_es_progress_name_day</name>
   <title>Name days</title>
   <comment>Hungarian name days</comment>
-  <log>true</log>
+  <log>false</log>
 
   <field>
     <name>id</name>

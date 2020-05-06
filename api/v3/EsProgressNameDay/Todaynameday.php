@@ -1,5 +1,4 @@
 <?php
-use CRM_NameDay_ExtensionUtil as E;
 
 /**
  * EsProgressNameDay.Todaynameday API specification (optional)
@@ -9,8 +8,8 @@ use CRM_NameDay_ExtensionUtil as E;
  *
  * @see https://docs.civicrm.org/dev/en/latest/framework/api-architecture/
  */
-function _civicrm_api3_es_progress_name_day_Todaynameday_spec(&$spec) {
-  $spec['magicword']['api.required'] = 1;
+function _civicrm_api3_es_progress_name_day_Todaynameday_spec(&$spec)
+{
 }
 
 /**
@@ -21,26 +20,28 @@ function _civicrm_api3_es_progress_name_day_Todaynameday_spec(&$spec) {
  * @return array
  *   API result descriptor
  *
+ * @throws API_Exception
+ * @throws \CiviCRM_API3_Exception
  * @see civicrm_api3_create_success
  *
- * @throws API_Exception
  */
-function civicrm_api3_es_progress_name_day_Todaynameday($params) {
-    $returnValues = array(
-      // OK, return several data rows
-      12 => ['id' => 12, 'name' => 'Twelve'],
-      34 => ['id' => 34, 'name' => 'Thirty four'],
-      56 => ['id' => 56, 'name' => 'Fifty six'],
-    );
-    // ALTERNATIVE: $returnValues = []; // OK, success
-    // ALTERNATIVE: $returnValues = ["Some value"]; // OK, return a single value
+function civicrm_api3_es_progress_name_day_Todaynameday($params)
+{
+  $bao = new CRM_NameDay_BAO_EsProgressNameDay();
 
-    $bao=new CRM_NameDay_BAO_EsProgressNameDay();
+  // Get tag ID
+  $tag_id = $bao->getTagId();
 
-    $bao->removeTagFromContacts();
+  // Remove tags from contacts (from last run)
+  $removed = $bao->removeTagFromContacts($tag_id);
 
-    $bao->putTagToContacts();
+  // Put tags to new contacts
+  $new = $bao->putTagToContacts($tag_id);
 
-    // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
-    return civicrm_api3_create_success($returnValues, $params, 'EsProgressNameDay', 'Todaynameday');
+  $return_values = [
+    'removed contacts' => $removed,
+    'today name day contacts' => $new,
+  ];
+
+  return civicrm_api3_create_success($return_values, $params, 'EsProgressNameDay', 'Todaynameday');
 }

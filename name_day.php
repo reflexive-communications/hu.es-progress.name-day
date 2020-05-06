@@ -1,14 +1,14 @@
 <?php
 
 require_once 'name_day.civix.php';
-use CRM_NameDay_ExtensionUtil as E;
 
 /**
  * Implements hook_civicrm_config().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
  */
-function name_day_civicrm_config(&$config) {
+function name_day_civicrm_config(&$config)
+{
   _name_day_civix_civicrm_config($config);
 }
 
@@ -17,7 +17,8 @@ function name_day_civicrm_config(&$config) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_xmlMenu
  */
-function name_day_civicrm_xmlMenu(&$files) {
+function name_day_civicrm_xmlMenu(&$files)
+{
   _name_day_civix_civicrm_xmlMenu($files);
 }
 
@@ -26,12 +27,13 @@ function name_day_civicrm_xmlMenu(&$files) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
-function name_day_civicrm_install() {
+function name_day_civicrm_install()
+{
   _name_day_civix_civicrm_install();
 
   // Create custom fields
-  $installer=_name_day_civix_upgrader();
-  $installer->createNameDayField();
+  $installer = _name_day_civix_upgrader();
+  $installer->createTag();
 }
 
 /**
@@ -39,7 +41,8 @@ function name_day_civicrm_install() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
  */
-function name_day_civicrm_postInstall() {
+function name_day_civicrm_postInstall()
+{
   _name_day_civix_civicrm_postInstall();
 }
 
@@ -48,15 +51,13 @@ function name_day_civicrm_postInstall() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
  */
-function name_day_civicrm_uninstall() {
+function name_day_civicrm_uninstall()
+{
   _name_day_civix_civicrm_uninstall();
 
-  // Get extension path
-  $path=CRM_Core_Resources::singleton()->getPath(E::LONG_NAME);
-
   // Delete custom fields
-  $installer=_name_day_civix_upgrader();
-  $installer->deleteCustomFields();
+  $installer = _name_day_civix_upgrader();
+  $installer->removeTag();
 }
 
 /**
@@ -64,7 +65,8 @@ function name_day_civicrm_uninstall() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
-function name_day_civicrm_enable() {
+function name_day_civicrm_enable()
+{
   _name_day_civix_civicrm_enable();
 }
 
@@ -73,7 +75,8 @@ function name_day_civicrm_enable() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
  */
-function name_day_civicrm_disable() {
+function name_day_civicrm_disable()
+{
   _name_day_civix_civicrm_disable();
 }
 
@@ -82,7 +85,8 @@ function name_day_civicrm_disable() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_upgrade
  */
-function name_day_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+function name_day_civicrm_upgrade($op, CRM_Queue_Queue $queue = null)
+{
   return _name_day_civix_civicrm_upgrade($op, $queue);
 }
 
@@ -94,7 +98,8 @@ function name_day_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_managed
  */
-function name_day_civicrm_managed(&$entities) {
+function name_day_civicrm_managed(&$entities)
+{
   _name_day_civix_civicrm_managed($entities);
 }
 
@@ -107,7 +112,8 @@ function name_day_civicrm_managed(&$entities) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_caseTypes
  */
-function name_day_civicrm_caseTypes(&$caseTypes) {
+function name_day_civicrm_caseTypes(&$caseTypes)
+{
   _name_day_civix_civicrm_caseTypes($caseTypes);
 }
 
@@ -121,7 +127,8 @@ function name_day_civicrm_caseTypes(&$caseTypes) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_angularModules
  */
-function name_day_civicrm_angularModules(&$angularModules) {
+function name_day_civicrm_angularModules(&$angularModules)
+{
   _name_day_civix_civicrm_angularModules($angularModules);
 }
 
@@ -130,7 +137,8 @@ function name_day_civicrm_angularModules(&$angularModules) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterSettingsFolders
  */
-function name_day_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+function name_day_civicrm_alterSettingsFolders(&$metaDataFolders = null)
+{
   _name_day_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
@@ -141,14 +149,16 @@ function name_day_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
-function name_day_civicrm_entityTypes(&$entityTypes) {
+function name_day_civicrm_entityTypes(&$entityTypes)
+{
   _name_day_civix_civicrm_entityTypes($entityTypes);
 }
 
 /**
  * Implements hook_civicrm_thems().
  */
-function name_day_civicrm_themes(&$themes) {
+function name_day_civicrm_themes(&$themes)
+{
   _name_day_civix_civicrm_themes($themes);
 }
 
@@ -159,26 +169,26 @@ function name_day_civicrm_themes(&$themes) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_preProcess
  *
-function name_day_civicrm_preProcess($formName, &$form) {
-
-} // */
+ * function name_day_civicrm_preProcess($formName, &$form) {
+ *
+ * } // */
 
 /**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  *
-function name_day_civicrm_navigationMenu(&$menu) {
-  _name_day_civix_insert_navigation_menu($menu, 'Mailings', array(
-    'label' => E::ts('New subliminal message'),
-    'name' => 'mailing_subliminal_message',
-    'url' => 'civicrm/mailing/subliminal',
-    'permission' => 'access CiviMail',
-    'operator' => 'OR',
-    'separator' => 0,
-  ));
-  _name_day_civix_navigationMenu($menu);
-} // */
+ * function name_day_civicrm_navigationMenu(&$menu) {
+ * _name_day_civix_insert_navigation_menu($menu, 'Mailings', array(
+ * 'label' => E::ts('New subliminal message'),
+ * 'name' => 'mailing_subliminal_message',
+ * 'url' => 'civicrm/mailing/subliminal',
+ * 'permission' => 'access CiviMail',
+ * 'operator' => 'OR',
+ * 'separator' => 0,
+ * ));
+ * _name_day_civix_navigationMenu($menu);
+ * } // */
 
 // function name_day_civicrm_post($op, $objectName, $objectId, &$objectRef) {
 //   if ($op !== 'create' && $op!=='edit') {

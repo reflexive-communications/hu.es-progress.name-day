@@ -1,4 +1,5 @@
 <?php
+
 namespace Civi\Api4;
 
 /**
@@ -8,6 +9,7 @@ namespace Civi\Api4;
  *
  * @package Civi\Api4
  */
-class EsProgressNameDay extends Generic\DAOEntity {
+class EsProgressNameDay extends Generic\DAOEntity
+{
 
 }
