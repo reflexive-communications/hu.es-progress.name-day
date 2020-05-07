@@ -28,11 +28,11 @@
 -- *
 -- *******************************************************/
 
-SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS=0;
 
-DROP TABLE IF EXISTS civicrm_es_progress_name_day;
+DROP TABLE IF EXISTS `civicrm_es_progress_name_day`;
 
-SET FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS=1;
 -- /*******************************************************
 -- *
 -- * Create new tables
@@ -46,15 +46,17 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- * Hungarian name days
 -- *
 -- *******************************************************/
-CREATE TABLE civicrm_es_progress_name_day
-(
+CREATE TABLE `civicrm_es_progress_name_day` (
 
 
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Name-day ID',
-  first_name VARCHAR(63) NOT NULL COMMENT 'First name',
-  name_day VARCHAR(15) NOT NULL COMMENT 'Date of name day',
-  PRIMARY KEY (id)
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Name-day ID',
+     `name_day` varchar(15) NOT NULL   COMMENT 'Date of name day',
+     `first_name` varchar(63) NOT NULL   COMMENT 'First name' 
+,
+        PRIMARY KEY (`id`)
+ 
+ 
+ 
+)    ;
 
-
-);
-
+ 
