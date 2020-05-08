@@ -141,7 +141,7 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
     // Delete each tag
     foreach ($entityTags as $entityTag) {
       EntityTag::delete()
-        ->addWhere('id', '=', $entityTag)
+        ->addWhere('id', '=', $entityTag['id'])
         ->execute();
 
       $affected_contacts++;
