@@ -2,8 +2,6 @@
 
 use Civi\Api4\Group;
 use Civi\Api4\OptionValue;
-use Civi\Api4\Tag;
-
 use CRM_NameDay_BAO_EsProgressNameDay as BAO;
 
 /**
@@ -48,7 +46,7 @@ class CRM_NameDay_Upgrader extends CRM_NameDay_Upgrader_Base
     }
 
     // Get Mailing list option value
-    $mailing_list_option=$this->getMailingListOptionValue();
+    $mailing_list_option = $this->getMailingListOptionValue();
 
     // Create group
     Group::create()
@@ -57,9 +55,12 @@ class CRM_NameDay_Upgrader extends CRM_NameDay_Upgrader_Base
       ->addValue('description', BAO::GROUP_DESC)
       ->addValue('source', CRM_NameDay_ExtensionUtil::LONG_NAME)
       ->addValue('visibility', 'User and User Admin Only')
-      ->addValue('group_type', [
-        $mailing_list_option,
-      ])
+      ->addValue(
+        'group_type',
+        [
+          $mailing_list_option,
+        ]
+      )
       ->execute();
   }
 

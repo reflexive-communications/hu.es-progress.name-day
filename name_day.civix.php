@@ -6,10 +6,13 @@
  * The ExtensionUtil class provides small stubs for accessing resources of this
  * extension.
  */
-class CRM_NameDay_ExtensionUtil {
-  const SHORT_NAME = "name_day";
-  const LONG_NAME = "hu.es-progress.name-day";
-  const CLASS_PREFIX = "CRM_NameDay";
+class CRM_NameDay_ExtensionUtil
+{
+  public const SHORT_NAME = "name_day";
+
+  public const LONG_NAME = "hu.es-progress.name-day";
+
+  public const CLASS_PREFIX = "CRM_NameDay";
 
   /**
    * Translate a string using the extension's domain.
@@ -20,14 +23,17 @@ class CRM_NameDay_ExtensionUtil {
    * @param string $text
    *   Canonical message text (generally en_US).
    * @param array $params
+   *
    * @return string
    *   Translated text.
    * @see ts
    */
-  public static function ts($text, $params = []) {
+  public static function ts($text, $params = [])
+  {
     if (!array_key_exists('domain', $params)) {
-      $params['domain'] = [self::LONG_NAME, NULL];
+      $params['domain'] = [self::LONG_NAME, null];
     }
+
     return ts($text, $params);
   }
 
@@ -37,14 +43,17 @@ class CRM_NameDay_ExtensionUtil {
    * @param string|NULL $file
    *   Ex: NULL.
    *   Ex: 'css/foo.css'.
+   *
    * @return string
    *   Ex: 'http://example.org/sites/default/ext/org.example.foo'.
    *   Ex: 'http://example.org/sites/default/ext/org.example.foo/css/foo.css'.
    */
-  public static function url($file = NULL) {
-    if ($file === NULL) {
+  public static function url($file = null)
+  {
+    if ($file === null) {
       return rtrim(CRM_Core_Resources::singleton()->getUrl(self::LONG_NAME), '/');
     }
+
     return CRM_Core_Resources::singleton()->getUrl(self::LONG_NAME, $file);
   }
 
@@ -54,13 +63,15 @@ class CRM_NameDay_ExtensionUtil {
    * @param string|NULL $file
    *   Ex: NULL.
    *   Ex: 'css/foo.css'.
+   *
    * @return string
    *   Ex: '/var/www/example.org/sites/default/ext/org.example.foo'.
    *   Ex: '/var/www/example.org/sites/default/ext/org.example.foo/css/foo.css'.
    */
-  public static function path($file = NULL) {
+  public static function path($file = null)
+  {
     // return CRM_Core_Resources::singleton()->getPath(self::LONG_NAME, $file);
-    return __DIR__ . ($file === NULL ? '' : (DIRECTORY_SEPARATOR . $file));
+    return __DIR__.($file === null ? '' : (DIRECTORY_SEPARATOR.$file));
   }
 
   /**
@@ -68,11 +79,13 @@ class CRM_NameDay_ExtensionUtil {
    *
    * @param string $suffix
    *   Ex: 'Page_HelloWorld' or 'Page\\HelloWorld'.
+   *
    * @return string
    *   Ex: 'CRM_Foo_Page_HelloWorld'.
    */
-  public static function findClass($suffix) {
-    return self::CLASS_PREFIX . '_' . str_replace('\\', '_', $suffix);
+  public static function findClass($suffix)
+  {
+    return self::CLASS_PREFIX.'_'.str_replace('\\', '_', $suffix);
   }
 
 }
@@ -84,26 +97,26 @@ use CRM_NameDay_ExtensionUtil as E;
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config
  */
-function _name_day_civix_civicrm_config(&$config = NULL) {
-  static $configured = FALSE;
+function _name_day_civix_civicrm_config(&$config = null)
+{
+  static $configured = false;
   if ($configured) {
     return;
   }
-  $configured = TRUE;
+  $configured = true;
 
   $template =& CRM_Core_Smarty::singleton();
 
-  $extRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-  $extDir = $extRoot . 'templates';
+  $extRoot = dirname(__FILE__).DIRECTORY_SEPARATOR;
+  $extDir = $extRoot.'templates';
 
   if (is_array($template->template_dir)) {
     array_unshift($template->template_dir, $extDir);
-  }
-  else {
+  } else {
     $template->template_dir = [$extDir, $template->template_dir];
   }
 
-  $include_path = $extRoot . PATH_SEPARATOR . get_include_path();
+  $include_path = $extRoot.PATH_SEPARATOR.get_include_path();
   set_include_path($include_path);
 }
 
@@ -114,8 +127,9 @@ function _name_day_civix_civicrm_config(&$config = NULL) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_xmlMenu
  */
-function _name_day_civix_civicrm_xmlMenu(&$files) {
-  foreach (_name_day_civix_glob(__DIR__ . '/xml/Menu/*.xml') as $file) {
+function _name_day_civix_civicrm_xmlMenu(&$files)
+{
+  foreach (_name_day_civix_glob(__DIR__.'/xml/Menu/*.xml') as $file) {
     $files[] = $file;
   }
 }
@@ -125,7 +139,8 @@ function _name_day_civix_civicrm_xmlMenu(&$files) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
-function _name_day_civix_civicrm_install() {
+function _name_day_civix_civicrm_install()
+{
   _name_day_civix_civicrm_config();
   if ($upgrader = _name_day_civix_upgrader()) {
     $upgrader->onInstall();
@@ -137,7 +152,8 @@ function _name_day_civix_civicrm_install() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
  */
-function _name_day_civix_civicrm_postInstall() {
+function _name_day_civix_civicrm_postInstall()
+{
   _name_day_civix_civicrm_config();
   if ($upgrader = _name_day_civix_upgrader()) {
     if (is_callable([$upgrader, 'onPostInstall'])) {
@@ -151,7 +167,8 @@ function _name_day_civix_civicrm_postInstall() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
  */
-function _name_day_civix_civicrm_uninstall() {
+function _name_day_civix_civicrm_uninstall()
+{
   _name_day_civix_civicrm_config();
   if ($upgrader = _name_day_civix_upgrader()) {
     $upgrader->onUninstall();
@@ -163,7 +180,8 @@ function _name_day_civix_civicrm_uninstall() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
-function _name_day_civix_civicrm_enable() {
+function _name_day_civix_civicrm_enable()
+{
   _name_day_civix_civicrm_config();
   if ($upgrader = _name_day_civix_upgrader()) {
     if (is_callable([$upgrader, 'onEnable'])) {
@@ -178,7 +196,8 @@ function _name_day_civix_civicrm_enable() {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
  * @return mixed
  */
-function _name_day_civix_civicrm_disable() {
+function _name_day_civix_civicrm_disable()
+{
   _name_day_civix_civicrm_config();
   if ($upgrader = _name_day_civix_upgrader()) {
     if (is_callable([$upgrader, 'onDisable'])) {
@@ -198,7 +217,8 @@ function _name_day_civix_civicrm_disable() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_upgrade
  */
-function _name_day_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+function _name_day_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = null)
+{
   if ($upgrader = _name_day_civix_upgrader()) {
     return $upgrader->onUpgrade($op, $queue);
   }
@@ -207,11 +227,11 @@ function _name_day_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 /**
  * @return CRM_NameDay_Upgrader
  */
-function _name_day_civix_upgrader() {
-  if (!file_exists(__DIR__ . '/CRM/NameDay/Upgrader.php')) {
-    return NULL;
-  }
-  else {
+function _name_day_civix_upgrader()
+{
+  if (!file_exists(__DIR__.'/CRM/NameDay/Upgrader.php')) {
+    return null;
+  } else {
     return CRM_NameDay_Upgrader_Base::instance();
   }
 }
@@ -227,7 +247,8 @@ function _name_day_civix_upgrader() {
  *
  * @return array(string)
  */
-function _name_day_civix_find_files($dir, $pattern) {
+function _name_day_civix_find_files($dir, $pattern)
+{
   if (is_callable(['CRM_Utils_File', 'findFiles'])) {
     return CRM_Utils_File::findFiles($dir, $pattern);
   }
@@ -242,19 +263,20 @@ function _name_day_civix_find_files($dir, $pattern) {
       }
     }
     if ($dh = opendir($subdir)) {
-      while (FALSE !== ($entry = readdir($dh))) {
-        $path = $subdir . DIRECTORY_SEPARATOR . $entry;
+      while (false !== ($entry = readdir($dh))) {
+        $path = $subdir.DIRECTORY_SEPARATOR.$entry;
         if ($entry{0} == '.') {
-        }
-        elseif (is_dir($path)) {
+        } elseif (is_dir($path)) {
           $todos[] = $path;
         }
       }
       closedir($dh);
     }
   }
+
   return $result;
 }
+
 /**
  * (Delegated) Implements hook_civicrm_managed().
  *
@@ -262,7 +284,8 @@ function _name_day_civix_find_files($dir, $pattern) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_managed
  */
-function _name_day_civix_civicrm_managed(&$entities) {
+function _name_day_civix_civicrm_managed(&$entities)
+{
   $mgdFiles = _name_day_civix_find_files(__DIR__, '*.mgd.php');
   sort($mgdFiles);
   foreach ($mgdFiles as $file) {
@@ -288,12 +311,13 @@ function _name_day_civix_civicrm_managed(&$entities) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_caseTypes
  */
-function _name_day_civix_civicrm_caseTypes(&$caseTypes) {
-  if (!is_dir(__DIR__ . '/xml/case')) {
+function _name_day_civix_civicrm_caseTypes(&$caseTypes)
+{
+  if (!is_dir(__DIR__.'/xml/case')) {
     return;
   }
 
-  foreach (_name_day_civix_glob(__DIR__ . '/xml/case/*.xml') as $file) {
+  foreach (_name_day_civix_glob(__DIR__.'/xml/case/*.xml') as $file) {
     $name = preg_replace('/\.xml$/', '', basename($file));
     if ($name != CRM_Case_XMLProcessor::mungeCaseType($name)) {
       $errorMessage = sprintf("Case-type file name is malformed (%s vs %s)", $name, CRM_Case_XMLProcessor::mungeCaseType($name));
@@ -316,12 +340,13 @@ function _name_day_civix_civicrm_caseTypes(&$caseTypes) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_angularModules
  */
-function _name_day_civix_civicrm_angularModules(&$angularModules) {
-  if (!is_dir(__DIR__ . '/ang')) {
+function _name_day_civix_civicrm_angularModules(&$angularModules)
+{
+  if (!is_dir(__DIR__.'/ang')) {
     return;
   }
 
-  $files = _name_day_civix_glob(__DIR__ . '/ang/*.ang.php');
+  $files = _name_day_civix_glob(__DIR__.'/ang/*.ang.php');
   foreach ($files as $file) {
     $name = preg_replace(':\.ang\.php$:', '', basename($file));
     $module = include $file;
@@ -337,8 +362,9 @@ function _name_day_civix_civicrm_angularModules(&$angularModules) {
  *
  * Find any and return any files matching "*.theme.php"
  */
-function _name_day_civix_civicrm_themes(&$themes) {
-  $files = _name_day_civix_glob(__DIR__ . '/*.theme.php');
+function _name_day_civix_civicrm_themes(&$themes)
+{
+  $files = _name_day_civix_glob(__DIR__.'/*.theme.php');
   foreach ($files as $file) {
     $themeMeta = include $file;
     if (empty($themeMeta['name'])) {
@@ -360,12 +386,15 @@ function _name_day_civix_civicrm_themes(&$themes) {
  * This wrapper provides consistency.
  *
  * @link http://php.net/glob
+ *
  * @param string $pattern
  *
  * @return array, possibly empty
  */
-function _name_day_civix_glob($pattern) {
+function _name_day_civix_glob($pattern)
+{
   $result = glob($pattern);
+
   return is_array($result) ? $result : [];
 }
 
@@ -380,20 +409,24 @@ function _name_day_civix_glob($pattern) {
  *
  * @return bool
  */
-function _name_day_civix_insert_navigation_menu(&$menu, $path, $item) {
+function _name_day_civix_insert_navigation_menu(&$menu, $path, $item)
+{
   // If we are done going down the path, insert menu
   if (empty($path)) {
     $menu[] = [
-      'attributes' => array_merge([
-        'label'      => CRM_Utils_Array::value('name', $item),
-        'active'     => 1,
-      ], $item),
+      'attributes' => array_merge(
+        [
+          'label' => CRM_Utils_Array::value('name', $item),
+          'active' => 1,
+        ],
+        $item
+      ),
     ];
-    return TRUE;
-  }
-  else {
+
+    return true;
+  } else {
     // Find an recurse into the next level down
-    $found = FALSE;
+    $found = false;
     $path = explode('/', $path);
     $first = array_shift($path);
     foreach ($menu as $key => &$entry) {
@@ -404,6 +437,7 @@ function _name_day_civix_insert_navigation_menu(&$menu, $path, $item) {
         $found = _name_day_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item);
       }
     }
+
     return $found;
   }
 }
@@ -411,7 +445,8 @@ function _name_day_civix_insert_navigation_menu(&$menu, $path, $item) {
 /**
  * (Delegated) Implements hook_civicrm_navigationMenu().
  */
-function _name_day_civix_navigationMenu(&$nodes) {
+function _name_day_civix_navigationMenu(&$nodes)
+{
   if (!is_callable(['CRM_Core_BAO_Navigation', 'fixNavigationMenu'])) {
     _name_day_civix_fixNavigationMenu($nodes);
   }
@@ -421,20 +456,25 @@ function _name_day_civix_navigationMenu(&$nodes) {
  * Given a navigation menu, generate navIDs for any items which are
  * missing them.
  */
-function _name_day_civix_fixNavigationMenu(&$nodes) {
+function _name_day_civix_fixNavigationMenu(&$nodes)
+{
   $maxNavID = 1;
-  array_walk_recursive($nodes, function($item, $key) use (&$maxNavID) {
-    if ($key === 'navID') {
-      $maxNavID = max($maxNavID, $item);
+  array_walk_recursive(
+    $nodes,
+    function ($item, $key) use (&$maxNavID) {
+      if ($key === 'navID') {
+        $maxNavID = max($maxNavID, $item);
+      }
     }
-  });
-  _name_day_civix_fixNavigationMenuItems($nodes, $maxNavID, NULL);
+  );
+  _name_day_civix_fixNavigationMenuItems($nodes, $maxNavID, null);
 }
 
-function _name_day_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
+function _name_day_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID)
+{
   $origKeys = array_keys($nodes);
   foreach ($origKeys as $origKey) {
-    if (!isset($nodes[$origKey]['attributes']['parentID']) && $parentID !== NULL) {
+    if (!isset($nodes[$origKey]['attributes']['parentID']) && $parentID !== null) {
       $nodes[$origKey]['attributes']['parentID'] = $parentID;
     }
     // If no navID, then assign navID and fix key.
@@ -456,8 +496,9 @@ function _name_day_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) 
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterSettingsFolders
  */
-function _name_day_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
-  $settingsDir = __DIR__ . DIRECTORY_SEPARATOR . 'settings';
+function _name_day_civix_civicrm_alterSettingsFolders(&$metaDataFolders = null)
+{
+  $settingsDir = __DIR__.DIRECTORY_SEPARATOR.'settings';
   if (!in_array($settingsDir, $metaDataFolders) && is_dir($settingsDir)) {
     $metaDataFolders[] = $settingsDir;
   }
@@ -471,13 +512,17 @@ function _name_day_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) 
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
 
-function _name_day_civix_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes = array_merge($entityTypes, array (
-    'CRM_NameDay_DAO_EsProgressNameDay' => 
-    array (
-      'name' => 'EsProgressNameDay',
-      'class' => 'CRM_NameDay_DAO_EsProgressNameDay',
-      'table' => 'civicrm_es_progress_name_day',
-    ),
-  ));
+function _name_day_civix_civicrm_entityTypes(&$entityTypes)
+{
+  $entityTypes = array_merge(
+    $entityTypes,
+    [
+      'CRM_NameDay_DAO_EsProgressNameDay' =>
+        [
+          'name' => 'EsProgressNameDay',
+          'class' => 'CRM_NameDay_DAO_EsProgressNameDay',
+          'table' => 'civicrm_es_progress_name_day',
+        ],
+    ]
+  );
 }

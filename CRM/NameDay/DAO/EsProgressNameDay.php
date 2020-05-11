@@ -12,7 +12,8 @@
 /**
  * Database access object for the EsProgressNameDay entity.
  */
-class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
+class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO
+{
 
   /**
    * Static instance to hold the table name.
@@ -26,7 +27,7 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
    *
    * @var bool
    */
-  public static $_log = FALSE;
+  public static $_log = false;
 
   /**
    * Name-day ID
@@ -52,7 +53,8 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
   /**
    * Class constructor.
    */
-  public function __construct() {
+  public function __construct()
+  {
     $this->__table = 'civicrm_es_progress_name_day';
     parent::__construct();
   }
@@ -62,14 +64,15 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
    *
    * @return array
    */
-  public static function &fields() {
+  public static function &fields()
+  {
     if (!isset(Civi::$statics[__CLASS__]['fields'])) {
       Civi::$statics[__CLASS__]['fields'] = [
         'id' => [
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
           'description' => CRM_NameDay_ExtensionUtil::ts('Name-day ID'),
-          'required' => TRUE,
+          'required' => true,
           'where' => 'civicrm_es_progress_name_day.id',
           'table_name' => 'civicrm_es_progress_name_day',
           'entity' => 'EsProgressNameDay',
@@ -81,12 +84,12 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_STRING,
           'title' => CRM_NameDay_ExtensionUtil::ts('Name day'),
           'description' => CRM_NameDay_ExtensionUtil::ts('Date of name day'),
-          'required' => TRUE,
+          'required' => true,
           'maxlength' => 15,
           'size' => CRM_Utils_Type::TWELVE,
-          'import' => TRUE,
+          'import' => true,
           'where' => 'civicrm_es_progress_name_day.name_day',
-          'export' => TRUE,
+          'export' => true,
           'table_name' => 'civicrm_es_progress_name_day',
           'entity' => 'EsProgressNameDay',
           'bao' => 'CRM_NameDay_DAO_EsProgressNameDay',
@@ -97,12 +100,12 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_STRING,
           'title' => CRM_NameDay_ExtensionUtil::ts('First name'),
           'description' => CRM_NameDay_ExtensionUtil::ts('First name'),
-          'required' => TRUE,
+          'required' => true,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
-          'import' => TRUE,
+          'import' => true,
           'where' => 'civicrm_es_progress_name_day.first_name',
-          'export' => TRUE,
+          'export' => true,
           'table_name' => 'civicrm_es_progress_name_day',
           'entity' => 'EsProgressNameDay',
           'bao' => 'CRM_NameDay_DAO_EsProgressNameDay',
@@ -111,6 +114,7 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
       ];
       CRM_Core_DAO_AllCoreTables::invoke(__CLASS__, 'fields_callback', Civi::$statics[__CLASS__]['fields']);
     }
+
     return Civi::$statics[__CLASS__]['fields'];
   }
 
@@ -120,10 +124,12 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
    * @return array
    *   Array(string $name => string $uniqueName).
    */
-  public static function &fieldKeys() {
+  public static function &fieldKeys()
+  {
     if (!isset(Civi::$statics[__CLASS__]['fieldKeys'])) {
       Civi::$statics[__CLASS__]['fieldKeys'] = array_flip(CRM_Utils_Array::collect('name', self::fields()));
     }
+
     return Civi::$statics[__CLASS__]['fieldKeys'];
   }
 
@@ -132,7 +138,8 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
    *
    * @return string
    */
-  public static function getTableName() {
+  public static function getTableName()
+  {
     return self::$_tableName;
   }
 
@@ -141,7 +148,8 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
    *
    * @return bool
    */
-  public function getLog() {
+  public function getLog()
+  {
     return self::$_log;
   }
 
@@ -152,8 +160,10 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
    *
    * @return array
    */
-  public static function &import($prefix = FALSE) {
+  public static function &import($prefix = false)
+  {
     $r = CRM_Core_DAO_AllCoreTables::getImports(__CLASS__, 'es_progress_name_day', $prefix, []);
+
     return $r;
   }
 
@@ -164,8 +174,10 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
    *
    * @return array
    */
-  public static function &export($prefix = FALSE) {
+  public static function &export($prefix = false)
+  {
     $r = CRM_Core_DAO_AllCoreTables::getExports(__CLASS__, 'es_progress_name_day', $prefix, []);
+
     return $r;
   }
 
@@ -176,8 +188,10 @@ class CRM_NameDay_DAO_EsProgressNameDay extends CRM_Core_DAO {
    *
    * @return array
    */
-  public static function indices($localize = TRUE) {
+  public static function indices($localize = true)
+  {
     $indices = [];
+
     return ($localize && !empty($indices)) ? CRM_Core_DAO_AllCoreTables::multilingualize(__CLASS__, $indices) : $indices;
   }
 

@@ -1,11 +1,9 @@
 <?php
 
 use Civi\Api4\Contact;
-use Civi\Api4\EntityTag;
 use Civi\Api4\EsProgressNameDay;
 use Civi\Api4\Group;
 use Civi\Api4\GroupContact;
-use Civi\Api4\Tag;
 
 /**
  * CRM_NameDay_BAO_EsProgressNameDay Class
@@ -15,17 +13,17 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
   /**
    * Group name
    */
-  public const GROUP_NAME='name day';
+  public const GROUP_NAME = 'name day';
 
   /**
    * Group title
    */
-  public const GROUP_TITLE='Today name day';
+  public const GROUP_TITLE = 'Today name day';
 
   /**
    * Group description
    */
-  public const GROUP_DESC='Contacts with name day today';
+  public const GROUP_DESC = 'Contacts with name day today';
 
   /**
    * Get group ID
@@ -50,6 +48,27 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
     } else {
       return 0;
     }
+  }
+
+  /**
+   * Get group members count
+   *
+   * @param int $group_id Group ID
+   *
+   * @return int
+   *
+   * @throws \API_Exception
+   * @throws \Civi\API\Exception\UnauthorizedException
+   */
+  public function getGroupMembersCount(int $group_id)
+  {
+    $result = GroupContact::get()
+      ->addSelect('id')
+      ->addWhere('group_id', '=', $group_id)
+      ->addWhere('status', '=', 'Added')
+      ->execute();
+
+    return $result->count();
   }
 
   /**
@@ -135,10 +154,9 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
     // Add contacts to group
     foreach ($contacts as $contact) {
       // Check contact status
-      $status=$this->getContactGroupStatus($contact,$group_id);
+      $status = $this->getContactGroupStatus($contact, $group_id);
 
       switch ($status) {
-
         case 'Removed':
           // GroupContact already exist --> Set contact status to added
           GroupContact::update()
@@ -179,7 +197,12 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
    */
   public function removeContactsFromGroup(int $group_id)
   {
-    $results=GroupContact::update()
+    // No contacts in group
+    if ($this->getGroupMembersCount($group_id) == 0) {
+      return;
+    }
+
+    $results = GroupContact::update()
       ->addWhere('group_id', '=', $group_id)
       ->addWhere('status', '=', 'Added')
       ->addValue('status', 'Removed')

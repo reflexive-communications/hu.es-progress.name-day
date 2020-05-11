@@ -11,7 +11,7 @@ class CRM_NameDay_Upgrader_Base
   /**
    * @var varies, subclass of this
    */
-  static public $instance;
+  public static $instance;
 
   /**
    * @var CRM_Queue_TaskContext
