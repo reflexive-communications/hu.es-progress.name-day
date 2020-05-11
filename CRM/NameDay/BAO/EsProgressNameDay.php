@@ -12,10 +12,19 @@ use Civi\Api4\Tag;
  */
 class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDay
 {
+  /**
+   * Group name
+   */
   public const GROUP_NAME='name day';
 
+  /**
+   * Group title
+   */
   public const GROUP_TITLE='Today name day';
 
+  /**
+   * Group description
+   */
   public const GROUP_DESC='Contacts with name day today';
 
   /**
@@ -44,6 +53,29 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
   }
 
   /**
+   * Get contact status in group
+   *
+   * @param int $contact_id Contact ID
+   * @param int $group_id Group ID
+   *
+   * @return mixed
+   *
+   * @throws \API_Exception
+   * @throws \Civi\API\Exception\UnauthorizedException
+   */
+  public function getContactGroupStatus(int $contact_id, int $group_id)
+  {
+    $result = GroupContact::get()
+      ->addSelect('status')
+      ->addWhere('contact_id', '=', $contact_id)
+      ->addWhere('group_id', '=', $group_id)
+      ->setLimit(1)
+      ->execute();
+
+    return $result->first()['status'];
+  }
+
+  /**
    * Get contacts who has name day today
    *
    * @return array Contact IDs
@@ -51,7 +83,7 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
    * @throws \API_Exception
    * @throws \Civi\API\Exception\UnauthorizedException
    */
-  public function getTodayNames()
+  protected function getTodayNames()
   {
     // Results
     $name_day_contacts = [];
@@ -102,12 +134,33 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
 
     // Add contacts to group
     foreach ($contacts as $contact) {
-      GroupContact::create()
-        ->addValue('group_id', $group_id)
-        ->addValue('contact_id', $contact)
-        ->addValue('status', 'Added')
-        ->execute();
+      // Check contact status
+      $status=$this->getContactGroupStatus($contact,$group_id);
 
+      switch ($status) {
+
+        case 'Removed':
+          // GroupContact already exist --> Set contact status to added
+          GroupContact::update()
+            ->addWhere('group_id', '=', $group_id)
+            ->addWhere('contact_id', '=', $contact)
+            ->addValue('status', 'Added')
+            ->execute();
+          break;
+
+        case 'Added':
+          // Contact already added --> don't do anything (this should not happen)
+          break;
+
+        default:
+          // Create GroupContact
+          GroupContact::create()
+            ->addValue('group_id', $group_id)
+            ->addValue('contact_id', $contact)
+            ->addValue('status', 'Added')
+            ->execute();
+          break;
+      }
       $affected_contacts++;
     }
 
@@ -115,7 +168,7 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
   }
 
   /**
-   * Remove tag from contacts
+   * Remove contacts from group
    *
    * @param int $group_id Group ID
    *
@@ -126,14 +179,12 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
    */
   public function removeContactsFromGroup(int $group_id)
   {
-    $affected_contacts = 0;
-
-    GroupContact::update()
+    $results=GroupContact::update()
       ->addWhere('group_id', '=', $group_id)
       ->addWhere('status', '=', 'Added')
       ->addValue('status', 'Removed')
       ->execute();
 
-    return $affected_contacts;
+    return $results->count();
   }
 }
