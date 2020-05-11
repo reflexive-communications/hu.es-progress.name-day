@@ -29,14 +29,14 @@ function civicrm_api3_es_progress_name_day_Todaynameday($params)
 {
   $bao = new CRM_NameDay_BAO_EsProgressNameDay();
 
-  // Get tag ID
-  $tag_id = $bao->getTagId();
+  // Get group ID
+  $group_id = $bao->getGroupId();
 
-  // Remove tags from contacts (from last run)
-  $removed = $bao->removeTagFromContacts($tag_id);
+  // Remove contacts from group (from last run)
+  $removed = $bao->removeContactsFromGroup($group_id);
 
-  // Put tags to new contacts
-  $new = $bao->putTagToContacts($tag_id);
+  // Add new contacts to group
+  $new = $bao->addContactsToGroup($group_id);
 
   $return_values = [
     'removed contacts' => $removed,

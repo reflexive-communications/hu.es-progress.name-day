@@ -3,6 +3,8 @@
 use Civi\Api4\Contact;
 use Civi\Api4\EntityTag;
 use Civi\Api4\EsProgressNameDay;
+use Civi\Api4\Group;
+use Civi\Api4\GroupContact;
 use Civi\Api4\Tag;
 
 /**
@@ -10,31 +12,26 @@ use Civi\Api4\Tag;
  */
 class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDay
 {
+  public const GROUP_NAME='name day';
+
+  public const GROUP_TITLE='Today name day';
+
+  public const GROUP_DESC='Contacts with name day today';
 
   /**
-   * Tag name
-   */
-  public const TAG_NAME = 'name day';
-
-  /**
-   * Tag description
-   */
-  public const TAG_DESCRIPTION = 'Today name day';
-
-  /**
-   * Get tag ID
+   * Get group ID
    *
-   * @return int Tag ID
+   * @return int Group ID
    *
    * @throws \API_Exception
    * @throws \Civi\API\Exception\UnauthorizedException
    */
-  public function getTagId(): int
+  public function getGroupId(): int
   {
-    // Get tag
-    $result = Tag::get()
+    // Get group
+    $result = Group::get()
       ->addSelect('id')
-      ->addWhere('name', '=', self::TAG_NAME)
+      ->addWhere('name', '=', self::GROUP_NAME)
       ->setLimit(1)
       ->execute();
 
@@ -86,16 +83,16 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
   }
 
   /**
-   * Apply tag to relevant contacts
+   * Add relevant contacts into group
    *
-   * @param int $tag_id Tag ID
+   * @param int $group_id Group ID
    *
    * @return int
    *
    * @throws \API_Exception
    * @throws \Civi\API\Exception\UnauthorizedException
    */
-  public function putTagToContacts(int $tag_id)
+  public function addContactsToGroup(int $group_id)
   {
     // Result
     $affected_contacts = 0;
@@ -103,12 +100,12 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
     // Get contacts with name days
     $contacts = $this->getTodayNames();
 
-    // Apply tag
+    // Add contacts to group
     foreach ($contacts as $contact) {
-      EntityTag::create()
-        ->addValue('entity_id', $contact)
-        ->addValue('tag_id', $tag_id)
-        ->addValue('entity_table', 'civicrm_contact')
+      GroupContact::create()
+        ->addValue('group_id', $group_id)
+        ->addValue('contact_id', $contact)
+        ->addValue('status', 'Added')
         ->execute();
 
       $affected_contacts++;
@@ -120,32 +117,22 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
   /**
    * Remove tag from contacts
    *
-   * @param int $tag_id Tag ID
+   * @param int $group_id Group ID
    *
    * @return int
    *
    * @throws \API_Exception
    * @throws \Civi\API\Exception\UnauthorizedException
    */
-  public function removeTagFromContacts(int $tag_id)
+  public function removeContactsFromGroup(int $group_id)
   {
     $affected_contacts = 0;
 
-    // Search contacts with tag
-    $entityTags = EntityTag::get()
-      ->addSelect('id')
-      ->addWhere('tag_id', '=', $tag_id)
-      ->addWhere('entity_table', '=', 'civicrm_contact')
+    GroupContact::update()
+      ->addWhere('group_id', '=', $group_id)
+      ->addWhere('status', '=', 'Added')
+      ->addValue('status', 'Removed')
       ->execute();
-
-    // Delete each tag
-    foreach ($entityTags as $entityTag) {
-      EntityTag::delete()
-        ->addWhere('id', '=', $entityTag['id'])
-        ->execute();
-
-      $affected_contacts++;
-    }
 
     return $affected_contacts;
   }

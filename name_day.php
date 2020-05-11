@@ -33,7 +33,7 @@ function name_day_civicrm_install()
 
   // Create custom fields
   $installer = _name_day_civix_upgrader();
-  $installer->createTag();
+  $installer->createGroup();
 }
 
 /**
@@ -57,7 +57,7 @@ function name_day_civicrm_uninstall()
 
   // Delete custom fields
   $installer = _name_day_civix_upgrader();
-  $installer->removeTag();
+  $installer->removeGroup();
 }
 
 /**

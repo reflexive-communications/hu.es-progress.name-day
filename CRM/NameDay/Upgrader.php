@@ -1,54 +1,88 @@
 <?php
 
+use Civi\Api4\Group;
+use Civi\Api4\OptionValue;
 use Civi\Api4\Tag;
+
+use CRM_NameDay_BAO_EsProgressNameDay as BAO;
 
 /**
  * Collection of upgrade steps.
  */
 class CRM_NameDay_Upgrader extends CRM_NameDay_Upgrader_Base
 {
-
   /**
-   * Create new tag
+   * Get Mailing list option value
+   *
+   * @return mixed
    *
    * @throws \API_Exception
    * @throws \Civi\API\Exception\UnauthorizedException
    */
-  public function createTag()
+  public function getMailingListOptionValue()
   {
-    // Get Tag ID
-    $bao = new CRM_NameDay_BAO_EsProgressNameDay();
-    $tag_id = $bao->getTagId();
+    $result = OptionValue::get()
+      ->addSelect('value')
+      ->addWhere('name', '=', 'Mailing list')
+      ->setLimit(1)
+      ->execute();
 
-    // Tag ID valid --> Tag already exist
-    if ($tag_id != 0) {
+    return $result->first()['value'];
+  }
+
+  /**
+   * Create new group
+   *
+   * @throws \API_Exception
+   * @throws \Civi\API\Exception\UnauthorizedException
+   */
+  public function createGroup()
+  {
+    // Get Group ID
+    $bao = new BAO();
+    $group_id = $bao->getGroupId();
+
+    // Group ID valid --> Group already exist
+    if ($group_id != 0) {
       return;
     }
 
-    // Tag not exist --> create
-    Tag::create()
-      ->addValue('name', CRM_NameDay_BAO_EsProgressNameDay::TAG_NAME)
-      ->addValue('description', CRM_NameDay_BAO_EsProgressNameDay::TAG_DESCRIPTION)
-      ->addValue('is_selectable', true)
-      ->addValue(
-        'used_for',
-        [
-          'civicrm_contact',
-        ]
-      )
+    // Get Mailing list option value
+    $mailing_list_option=$this->getMailingListOptionValue();
+
+    // Create group
+    Group::create()
+      ->addValue('title', BAO::GROUP_TITLE)
+      ->addValue('name', BAO::GROUP_NAME)
+      ->addValue('description', BAO::GROUP_DESC)
+      ->addValue('source', CRM_NameDay_ExtensionUtil::LONG_NAME)
+      ->addValue('visibility', 'User and User Admin Only')
+      ->addValue('group_type', [
+        $mailing_list_option,
+      ])
       ->execute();
   }
 
   /**
-   * Remove tag
+   * Remove group
    *
    * @throws \API_Exception
    * @throws \Civi\API\Exception\UnauthorizedException
    */
-  public function removeTag()
+  public function removeGroup()
   {
-    Tag::delete()
-      ->addWhere('name', '=', CRM_NameDay_BAO_EsProgressNameDay::TAG_NAME)
+    // Get Group ID
+    $bao = new BAO();
+    $group_id = $bao->getGroupId();
+
+    // Group ID not valid --> Group already deleted
+    if ($group_id === 0) {
+      return;
+    }
+
+    // Delete group
+    Group::delete()
+      ->addWhere('id', '=', $group_id)
       ->setLimit(1)
       ->execute();
   }
