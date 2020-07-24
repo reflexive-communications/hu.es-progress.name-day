@@ -171,12 +171,20 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
           break;
 
         default:
+          // API v4: for some reason this call sometimes not work
           // Create GroupContact
-          GroupContact::create()
-            ->addValue('group_id', $group_id)
-            ->addValue('contact_id', $contact)
-            ->addValue('status', 'Added')
-            ->execute();
+          // GroupContact::create()
+          //   ->addValue('group_id', $group_id)
+          //   ->addValue('contact_id', $contact)
+          //   ->addValue('status', 'Added')
+          //   ->execute();
+
+          // API v3: it works reliably
+          $result = civicrm_api3('GroupContact', 'create', [
+            'group_id' => self::GROUP_NAME,
+            'contact_id' => $contact,
+            'status' => "Added",
+          ]);
           break;
       }
       $affected_contacts++;
