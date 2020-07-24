@@ -170,7 +170,7 @@ class CRM_NameDay_BAO_EsProgressNameDay extends CRM_NameDay_DAO_EsProgressNameDa
           // Contact already added --> don't do anything (this should not happen)
           break;
 
-        default: //
+        default:
           // API v4: for some reason this call sometimes not work
           // Create GroupContact
           // GroupContact::create()
