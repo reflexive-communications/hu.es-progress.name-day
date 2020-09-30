@@ -27,21 +27,21 @@ function _civicrm_api3_es_progress_name_day_Todaynameday_spec(&$spec)
  */
 function civicrm_api3_es_progress_name_day_Todaynameday($params)
 {
-  $bao = new CRM_NameDay_BAO_EsProgressNameDay();
+    $bao = new CRM_NameDay_BAO_EsProgressNameDay();
 
-  // Get group ID
-  $group_id = $bao->getGroupId();
+    // Get group ID
+    $group_id = $bao->getGroupId();
 
-  // Remove contacts from group (from last run)
-  $removed = $bao->removeContactsFromGroup($group_id);
+    // Remove contacts from group (from last run)
+    $removed = $bao->removeContactsFromGroup($group_id);
 
-  // Add new contacts to group
-  $new = $bao->addContactsToGroup($group_id);
+    // Add new contacts to group
+    $new = $bao->addContactsToGroup($group_id);
 
-  $return_values = [
-    'removed contacts' => $removed,
-    'today name day contacts' => $new,
-  ];
+    $return_values = [
+        'removed contacts' => $removed,
+        'today name day contacts' => $new,
+    ];
 
-  return civicrm_api3_create_success($return_values, $params, 'EsProgressNameDay', 'Todaynameday');
+    return civicrm_api3_create_success($return_values, $params, 'EsProgressNameDay', 'Todaynameday');
 }

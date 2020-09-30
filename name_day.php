@@ -9,7 +9,7 @@ require_once 'name_day.civix.php';
  */
 function name_day_civicrm_config(&$config)
 {
-  _name_day_civix_civicrm_config($config);
+    _name_day_civix_civicrm_config($config);
 }
 
 /**
@@ -19,7 +19,7 @@ function name_day_civicrm_config(&$config)
  */
 function name_day_civicrm_xmlMenu(&$files)
 {
-  _name_day_civix_civicrm_xmlMenu($files);
+    _name_day_civix_civicrm_xmlMenu($files);
 }
 
 /**
@@ -29,11 +29,11 @@ function name_day_civicrm_xmlMenu(&$files)
  */
 function name_day_civicrm_install()
 {
-  _name_day_civix_civicrm_install();
+    _name_day_civix_civicrm_install();
 
-  // Create custom fields
-  $installer = _name_day_civix_upgrader();
-  $installer->createGroup();
+    // Create custom fields
+    $installer = _name_day_civix_upgrader();
+    $installer->createGroup();
 }
 
 /**
@@ -43,7 +43,7 @@ function name_day_civicrm_install()
  */
 function name_day_civicrm_postInstall()
 {
-  _name_day_civix_civicrm_postInstall();
+    _name_day_civix_civicrm_postInstall();
 }
 
 /**
@@ -53,11 +53,11 @@ function name_day_civicrm_postInstall()
  */
 function name_day_civicrm_uninstall()
 {
-  _name_day_civix_civicrm_uninstall();
+    _name_day_civix_civicrm_uninstall();
 
-  // Delete custom fields
-  $installer = _name_day_civix_upgrader();
-  $installer->removeGroup();
+    // Delete custom fields
+    $installer = _name_day_civix_upgrader();
+    $installer->removeGroup();
 }
 
 /**
@@ -67,7 +67,7 @@ function name_day_civicrm_uninstall()
  */
 function name_day_civicrm_enable()
 {
-  _name_day_civix_civicrm_enable();
+    _name_day_civix_civicrm_enable();
 }
 
 /**
@@ -77,7 +77,7 @@ function name_day_civicrm_enable()
  */
 function name_day_civicrm_disable()
 {
-  _name_day_civix_civicrm_disable();
+    _name_day_civix_civicrm_disable();
 }
 
 /**
@@ -87,7 +87,7 @@ function name_day_civicrm_disable()
  */
 function name_day_civicrm_upgrade($op, CRM_Queue_Queue $queue = null)
 {
-  return _name_day_civix_civicrm_upgrade($op, $queue);
+    return _name_day_civix_civicrm_upgrade($op, $queue);
 }
 
 /**
@@ -100,7 +100,7 @@ function name_day_civicrm_upgrade($op, CRM_Queue_Queue $queue = null)
  */
 function name_day_civicrm_managed(&$entities)
 {
-  _name_day_civix_civicrm_managed($entities);
+    _name_day_civix_civicrm_managed($entities);
 }
 
 /**
@@ -114,7 +114,7 @@ function name_day_civicrm_managed(&$entities)
  */
 function name_day_civicrm_caseTypes(&$caseTypes)
 {
-  _name_day_civix_civicrm_caseTypes($caseTypes);
+    _name_day_civix_civicrm_caseTypes($caseTypes);
 }
 
 /**
@@ -129,7 +129,7 @@ function name_day_civicrm_caseTypes(&$caseTypes)
  */
 function name_day_civicrm_angularModules(&$angularModules)
 {
-  _name_day_civix_civicrm_angularModules($angularModules);
+    _name_day_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -139,7 +139,7 @@ function name_day_civicrm_angularModules(&$angularModules)
  */
 function name_day_civicrm_alterSettingsFolders(&$metaDataFolders = null)
 {
-  _name_day_civix_civicrm_alterSettingsFolders($metaDataFolders);
+    _name_day_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
 /**
@@ -151,7 +151,7 @@ function name_day_civicrm_alterSettingsFolders(&$metaDataFolders = null)
  */
 function name_day_civicrm_entityTypes(&$entityTypes)
 {
-  _name_day_civix_civicrm_entityTypes($entityTypes);
+    _name_day_civix_civicrm_entityTypes($entityTypes);
 }
 
 /**
@@ -159,7 +159,7 @@ function name_day_civicrm_entityTypes(&$entityTypes)
  */
 function name_day_civicrm_themes(&$themes)
 {
-  _name_day_civix_civicrm_themes($themes);
+    _name_day_civix_civicrm_themes($themes);
 }
 
 // --- Functions below this ship commented out. Uncomment as required. ---

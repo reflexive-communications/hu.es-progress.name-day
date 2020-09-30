@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="iso-8859-1" ?>
 
 <table>
-  <base>CRM/NameDay</base>
-  <class>EsProgressNameDay</class>
-  <name>civicrm_es_progress_name_day</name>
-  <title>Name days</title>
-  <comment>Hungarian name days</comment>
-  <log>false</log>
+    <base>CRM/NameDay</base>
+    <class>EsProgressNameDay</class>
+    <name>civicrm_es_progress_name_day</name>
+    <title>Name days</title>
+    <comment>Hungarian name days</comment>
+    <log>false</log>
 
-  <field>
-    <name>id</name>
-    <type>int unsigned</type>
-    <required>true</required>
-    <comment>Name-day ID</comment>
-  </field>
-  <primaryKey>
-    <name>id</name>
-    <autoincrement>true</autoincrement>
-  </primaryKey>
+    <field>
+        <name>id</name>
+        <type>int unsigned</type>
+        <required>true</required>
+        <comment>Name-day ID</comment>
+    </field>
+    <primaryKey>
+        <name>id</name>
+        <autoincrement>true</autoincrement>
+    </primaryKey>
 
-  <field>
-    <name>name_day</name>
-    <title>Name day</title>
-    <comment>Date of name day</comment>
-    <type>varchar</type>
-    <length>15</length>
-    <required>true</required>
-    <import>true</import>
-    <export>true</export>
-  </field>
+    <field>
+        <name>name_day</name>
+        <title>Name day</title>
+        <comment>Date of name day</comment>
+        <type>varchar</type>
+        <length>15</length>
+        <required>true</required>
+        <import>true</import>
+        <export>true</export>
+    </field>
 
-  <field>
-    <name>first_name</name>
-    <title>First name</title>
-    <comment>First name</comment>
-    <type>varchar</type>
-    <length>63</length>
-    <required>true</required>
-    <import>true</import>
-    <export>true</export>
-  </field>
+    <field>
+        <name>first_name</name>
+        <title>First name</title>
+        <comment>First name</comment>
+        <type>varchar</type>
+        <length>63</length>
+        <required>true</required>
+        <import>true</import>
+        <export>true</export>
+    </field>
 </table>
