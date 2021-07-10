@@ -8,11 +8,9 @@
  */
 class CRM_NameDay_ExtensionUtil
 {
-    public const SHORT_NAME = "name_day";
-
-    public const LONG_NAME = "hu.es-progress.name-day";
-
-    public const CLASS_PREFIX = "CRM_NameDay";
+    const SHORT_NAME = 'name_day';
+    const LONG_NAME = 'hu.es-progress.name-day';
+    const CLASS_PREFIX = 'CRM_NameDay';
 
     /**
      * Translate a string using the extension's domain.
@@ -33,7 +31,6 @@ class CRM_NameDay_ExtensionUtil
         if (!array_key_exists('domain', $params)) {
             $params['domain'] = [self::LONG_NAME, null];
         }
-
         return ts($text, $params);
     }
 
@@ -53,7 +50,6 @@ class CRM_NameDay_ExtensionUtil
         if ($file === null) {
             return rtrim(CRM_Core_Resources::singleton()->getUrl(self::LONG_NAME), '/');
         }
-
         return CRM_Core_Resources::singleton()->getUrl(self::LONG_NAME, $file);
     }
 
@@ -87,7 +83,6 @@ class CRM_NameDay_ExtensionUtil
     {
         return self::CLASS_PREFIX.'_'.str_replace('\\', '_', $suffix);
     }
-
 }
 
 use CRM_NameDay_ExtensionUtil as E;
@@ -212,8 +207,9 @@ function _name_day_civix_civicrm_disable()
  * @param $op string, the type of operation being performed; 'check' or 'enqueue'
  * @param $queue CRM_Queue_Queue, (for 'enqueue') the modifiable list of pending up upgrade tasks
  *
- * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
- *                for 'enqueue', returns void
+ * @return mixed
+ *   based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
+ *   for 'enqueue', returns void
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_upgrade
  */
@@ -240,41 +236,17 @@ function _name_day_civix_upgrader()
  * Search directory tree for files which match a glob pattern.
  *
  * Note: Dot-directories (like "..", ".git", or ".svn") will be ignored.
- * Note: In Civi 4.3+, delegate to CRM_Utils_File::findFiles()
+ * Note: Delegate to CRM_Utils_File::findFiles(), this function kept only
+ * for backward compatibility of extension code that uses it.
  *
  * @param string $dir base dir
  * @param string $pattern , glob pattern, eg "*.txt"
  *
- * @return array(string)
+ * @return array
  */
 function _name_day_civix_find_files($dir, $pattern)
 {
-    if (is_callable(['CRM_Utils_File', 'findFiles'])) {
-        return CRM_Utils_File::findFiles($dir, $pattern);
-    }
-
-    $todos = [$dir];
-    $result = [];
-    while (!empty($todos)) {
-        $subdir = array_shift($todos);
-        foreach (_name_day_civix_glob("$subdir/$pattern") as $match) {
-            if (!is_dir($match)) {
-                $result[] = $match;
-            }
-        }
-        if ($dh = opendir($subdir)) {
-            while (false !== ($entry = readdir($dh))) {
-                $path = $subdir.DIRECTORY_SEPARATOR.$entry;
-                if ($entry[0] == '.') {
-                } elseif (is_dir($path)) {
-                    $todos[] = $path;
-                }
-            }
-            closedir($dh);
-        }
-    }
-
-    return $result;
+    return CRM_Utils_File::findFiles($dir, $pattern);
 }
 
 /**
@@ -389,12 +361,11 @@ function _name_day_civix_civicrm_themes(&$themes)
  *
  * @param string $pattern
  *
- * @return array, possibly empty
+ * @return array
  */
 function _name_day_civix_glob($pattern)
 {
     $result = glob($pattern);
-
     return is_array($result) ? $result : [];
 }
 
@@ -414,15 +385,11 @@ function _name_day_civix_insert_navigation_menu(&$menu, $path, $item)
     // If we are done going down the path, insert menu
     if (empty($path)) {
         $menu[] = [
-            'attributes' => array_merge(
-                [
-                    'label' => CRM_Utils_Array::value('name', $item),
-                    'active' => 1,
-                ],
-                $item
-            ),
+            'attributes' => array_merge([
+                'label' => CRM_Utils_Array::value('name', $item),
+                'active' => 1,
+            ], $item),
         ];
-
         return true;
     } else {
         // Find an recurse into the next level down
@@ -437,7 +404,6 @@ function _name_day_civix_insert_navigation_menu(&$menu, $path, $item)
                 $found = _name_day_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item);
             }
         }
-
         return $found;
     }
 }
@@ -459,14 +425,11 @@ function _name_day_civix_navigationMenu(&$nodes)
 function _name_day_civix_fixNavigationMenu(&$nodes)
 {
     $maxNavID = 1;
-    array_walk_recursive(
-        $nodes,
-        function ($item, $key) use (&$maxNavID) {
-            if ($key === 'navID') {
-                $maxNavID = max($maxNavID, $item);
-            }
+    array_walk_recursive($nodes, function ($item, $key) use (&$maxNavID) {
+        if ($key === 'navID') {
+            $maxNavID = max($maxNavID, $item);
         }
-    );
+    });
     _name_day_civix_fixNavigationMenuItems($nodes, $maxNavID, null);
 }
 
@@ -511,18 +474,13 @@ function _name_day_civix_civicrm_alterSettingsFolders(&$metaDataFolders = null)
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
-
 function _name_day_civix_civicrm_entityTypes(&$entityTypes)
 {
-    $entityTypes = array_merge(
-        $entityTypes,
-        [
-            'CRM_NameDay_DAO_EsProgressNameDay' =>
-                [
-                    'name' => 'EsProgressNameDay',
-                    'class' => 'CRM_NameDay_DAO_EsProgressNameDay',
-                    'table' => 'civicrm_es_progress_name_day',
-                ],
-        ]
-    );
+    $entityTypes = array_merge($entityTypes, [
+        'CRM_NameDay_DAO_EsProgressNameDay' => [
+            'name' => 'EsProgressNameDay',
+            'class' => 'CRM_NameDay_DAO_EsProgressNameDay',
+            'table' => 'civicrm_es_progress_name_day',
+        ],
+    ]);
 }
